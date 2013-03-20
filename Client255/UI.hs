@@ -3,7 +3,6 @@ module Client255.UI
     ) where
 
 import Control.Applicative
-import Control.Monad.Trans (liftIO)
 import System.Directory
 import System.FilePath
 import Web.Authenticate.OAuth (Credential)
