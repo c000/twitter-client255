@@ -37,7 +37,8 @@ oauth = OAuth.newOAuth
 getCred :: IO Credential
 getCred = do
     tmp <- withManager $ getTemporaryCredential oauth
-    putStrLn $ authorizeUrl oauth tmp
+    putStrLn $ "URL: " ++ authorizeUrl oauth tmp
+    putStr $ "Enter PIN: "
     pin <- BS.getLine
     let tmp' = injectVerifier pin tmp
     cred <- withManager $ getTokenCredential oauth tmp'
