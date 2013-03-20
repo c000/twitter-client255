@@ -14,6 +14,7 @@ import Web.Authenticate.OAuth as OAuth
 import Network.HTTP.Conduit
 
 import Data.Conduit
+import Data.Conduit.List (consume)
 import qualified Data.Conduit.Binary as CB
 import Data.Conduit.Attoparsec
 import Data.Aeson (json, Value (..))
@@ -44,7 +45,7 @@ getCred = do
     cred <- withManager $ getTokenCredential oauth tmp'
     return cred
 
-jsonParser = sinkParser json
+jsonParser = conduitParser json
 
 printJsonValue v = case v of
     String text -> T.putStrLn text
@@ -62,14 +63,19 @@ parseUserStream cred = do
         initReq <- parseUrl "https://userstream.twitter.com/1.1/user.json"
         req <- signOAuth oauth cred initReq
         source <- http req manager
-        loop (responseBody source) jsonParser
+        loop (responseBody source)
   where
-    loop source sink = do
-        (nextSource, result) <- source $$++ sink
+    loop source = do
+        (source', result) <- source $$++ jsonParser =$ await
         case result of
-            Object obj -> liftIO $ mapM_ (\(k,v) -> T.putStr k >> putStr "\t" >> printJsonValue v) $ HM.toList obj
-            other      -> liftIO $ print other
-        loop nextSource sink
+            Just (_, (Object obj)) -> do
+                liftIO $ mapM_ (\(k,v) -> T.putStr k >> putStr "\t" >> printJsonValue v) $ HM.toList obj
+                loop source'
+            Just (_, other)   -> do
+                liftIO $ print other
+                loop source'
+            Nothing           -> do
+                return ()
 
 getFavorites :: Credential -> IO ()
 getFavorites cred = do
