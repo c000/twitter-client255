@@ -3,7 +3,7 @@
 module Client255.Client255
     where
 
-import System.IO (stdout)
+import System.IO (hFlush, stdout)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.Text.IO as T
@@ -40,6 +40,7 @@ getCred = do
     tmp <- withManager $ getTemporaryCredential oauth
     putStrLn $ "URL: " ++ authorizeUrl oauth tmp
     putStr $ "Enter PIN: "
+    hFlush stdout
     pin <- BS.getLine
     let tmp' = injectVerifier pin tmp
     cred <- withManager $ getTokenCredential oauth tmp'
