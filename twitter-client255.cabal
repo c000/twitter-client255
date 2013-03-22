@@ -62,4 +62,6 @@ executable twitter-client255
                      , authenticate-oauth
                      , unordered-containers
                      , text
+                     , time
+                     , old-locale
   ghc-options:         -O

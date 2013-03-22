@@ -17,11 +17,12 @@ import Data.Conduit
 import Data.Conduit.List (consume)
 import qualified Data.Conduit.Binary as CB
 import Data.Conduit.Attoparsec
-import Data.Aeson (json, Value (..))
+import Data.Aeson
 
 import Control.Monad.IO.Class (liftIO)
 
 import qualified Secrets
+import Client255.Type
 
 oauth :: OAuth.OAuth
 oauth = OAuth.newOAuth
@@ -48,10 +49,6 @@ getCred = do
 
 jsonParser = conduitParser json
 
-printJsonValue v = case v of
-    String text -> T.putStrLn text
-    other       -> print other
-
 postData :: IO (Request IO)
 postData = do
     initReq <- parseUrl "https://api.twitter.com/1.1/statuses/update.json"
@@ -69,11 +66,10 @@ parseUserStream cred = do
     loop source = do
         (source', result) <- source $$++ jsonParser =$ await
         case result of
-            Just (_, (Object obj)) -> do
-                liftIO $ mapM_ (\(k,v) -> T.putStr k >> putStr "\t" >> printJsonValue v) $ HM.toList obj
-                loop source'
-            Just (_, other)   -> do
-                liftIO $ print other
+            Just (_, json)   -> do
+                case fromJSON json of
+                    Success x -> liftIO $ print (x :: Tweet)
+                    Error err -> liftIO $ print json >> putStrLn err
                 loop source'
             Nothing           -> do
                 return ()
