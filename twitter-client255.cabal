@@ -64,4 +64,4 @@ executable twitter-client255
                      , text
                      , time
                      , old-locale
-  ghc-options:         -O
+  ghc-options:         -O -W

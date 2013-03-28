@@ -3,18 +3,15 @@
 module Client255.Client255
     where
 
-import System.IO (hFlush, stdout)
+import System.IO
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy.Char8 as LBS
-import qualified Data.Text.IO as T
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Data.HashMap.Strict as HM
 
 import Web.Authenticate.OAuth as OAuth
 import Network.HTTP.Conduit
 
 import Data.Conduit
-import Data.Conduit.List (consume)
 import qualified Data.Conduit.Binary as CB
 import Data.Conduit.Attoparsec
 import Data.Aeson
@@ -39,9 +36,9 @@ oauth = OAuth.newOAuth
 getCred :: IO Credential
 getCred = do
     tmp <- withManager $ getTemporaryCredential oauth
-    putStrLn $ "URL: " ++ authorizeUrl oauth tmp
-    putStr $ "Enter PIN: "
-    hFlush stdout
+    hPutStrLn stderr $ "URL: " ++ authorizeUrl oauth tmp
+    hPutStr stderr $ "Enter PIN: "
+    hFlush stderr
     pin <- BS.getLine
     let tmp' = injectVerifier pin tmp
     cred <- withManager $ getTokenCredential oauth tmp'
@@ -49,11 +46,13 @@ getCred = do
 
 jsonParser = conduitParser json
 
-postData :: IO (Request IO)
-postData = do
+postData :: Credential -> T.Text -> IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
+postData cred postString = withManager $ \manager -> do
     initReq <- parseUrl "https://api.twitter.com/1.1/statuses/update.json"
-    let text = TE.encodeUtf8 ""
-    return $ urlEncodedBody [("status", text)] initReq
+    let text = TE.encodeUtf8 postString
+    let request = urlEncodedBody [("status", text)] initReq
+    signed <- signOAuth oauth cred request
+    http signed manager
 
 parseUserStream :: Credential -> IO ()
 parseUserStream cred = do
