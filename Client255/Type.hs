@@ -4,7 +4,6 @@ module Client255.Type
     where
 
 import Control.Applicative
-import Data.ByteString (ByteString)
 import Data.Text
 import Data.Time
 import Data.Aeson
@@ -27,11 +26,13 @@ instance FromJSON Tweet where
         <*> tweet .: "user"
       where
         twitterTime :: HashMap Text Value -> Parser UTCTime
-        twitterTime object = case H.lookup "created_at" tweet of
+        twitterTime object = case H.lookup "created_at" object of
             Nothing -> fail "Cannot find created_at"
             Just (String string) -> case (parseTime defaultTimeLocale "%a %b %d %T %z %Y" (unpack string)) of
                 Nothing -> fail "Cannot parse"
                 Just time -> return time
+            Just _ -> fail "Invalid format created_at"
+    parseJSON _ = fail "Invalid format"
 
 data User = User
     { userId :: Integer
@@ -44,3 +45,4 @@ instance FromJSON User where
         <$> user .: "id"
         <*> user .: "name"
         <*> user .: "screen_name"
+    parseJSON _ = fail "Invalid format user"
