@@ -13,7 +13,9 @@ import Client255.Config
 runClient :: Config -> IO ()
 runClient config = do
     cred <- tryGetCred (credPath config)
-    parseUserStream cred
+    case command config of
+        UserStream -> parseUserStream cred
+        Tweet content -> tweet cred content
 
 tryGetCred :: FilePath -> IO Credential
 tryGetCred path = do
@@ -26,3 +28,7 @@ tryGetCred path = do
             createDirectoryIfMissing True $ takeDirectory path
             writeFile path (show cred)
             return cred
+
+tweet cred content = do
+    postData cred content
+    return ()
