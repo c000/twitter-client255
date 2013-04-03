@@ -5,7 +5,11 @@ import System.FilePath
 import Client255.UI
 import Client255.Config
 
-main = do
+defaultConfig :: IO Config
+defaultConfig = do
     basePath <- getAppUserDataDirectory "client255"
-    let config = Config (basePath </> "cred")
+    return $ Config (basePath </> "cred")
+
+main = do
+    config <- defaultConfig
     runClient config
