@@ -33,6 +33,9 @@ oauth = OAuth.newOAuth
     , OAuth.oauthVersion = OAuth.OAuth10a
     }
 
+restAPI :: String -> String
+restAPI endpoint = "https://api.twitter.com/1.1/" ++ endpoint
+
 getCred :: IO Credential
 getCred = do
     tmp <- withManager $ getTemporaryCredential oauth
@@ -48,7 +51,7 @@ jsonParser = conduitParser json
 
 postData :: Credential -> T.Text -> IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
 postData cred postString = withManager $ \manager -> do
-    initReq <- parseUrl "https://api.twitter.com/1.1/statuses/update.json"
+    initReq <- parseUrl $ restAPI "statuses/update.json"
     let text = TE.encodeUtf8 postString
     let request = urlEncodedBody [("status", text)] initReq
     signed <- signOAuth oauth cred request
@@ -76,7 +79,7 @@ parseUserStream cred = do
 getFavorites :: Credential -> IO ()
 getFavorites cred = do
     withManager $ \manager -> do
-        initReq <- parseUrl "https://api.twitter.com/1.1/favorites/list.json?count=200"
+        initReq <- parseUrl $ restAPI "favorites/list.json?count=200"
         req <- signOAuth oauth cred initReq
         response <- http req manager
         (responseBody response) $$+- CB.sinkFile "/tmp/favorites.json"
