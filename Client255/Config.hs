@@ -1,7 +1,6 @@
 module Client255.Config
     where
 
-import System.FilePath
 import Data.Text (Text)
 
 data Config = Config
