@@ -26,7 +26,7 @@ instance FromJSON Tweet where
         <*> tweet .: "user"
       where
         twitterTime :: HashMap Text Value -> Parser UTCTime
-        twitterTime object = case H.lookup "created_at" object of
+        twitterTime obj = case H.lookup "created_at" obj of
             Nothing -> fail "Cannot find created_at"
             Just (String string) -> case (parseTime defaultTimeLocale "%a %b %d %T %z %Y" (unpack string)) of
                 Nothing -> fail "Cannot parse"
@@ -41,8 +41,8 @@ data User = User
     } deriving (Show)
 
 instance FromJSON User where
-    parseJSON (Object user) = User
-        <$> user .: "id"
-        <*> user .: "name"
-        <*> user .: "screen_name"
+    parseJSON (Object o) = User
+        <$> o .: "id"
+        <*> o .: "name"
+        <*> o .: "screen_name"
     parseJSON _ = fail "Invalid format user"
