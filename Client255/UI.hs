@@ -3,6 +3,7 @@ module Client255.UI
     ) where
 
 import Control.Applicative
+import Data.Text (Text)
 import System.Directory
 import System.FilePath
 import Web.Authenticate.OAuth (Credential)
@@ -29,6 +30,7 @@ tryGetCred path = do
             writeFile path (show cred)
             return cred
 
+tweet :: Credential -> Text -> IO ()
 tweet cred content = do
     postData cred content
     return ()

@@ -47,13 +47,14 @@ getCred = do
     cred <- withManager $ getTokenCredential oauth tmp'
     return cred
 
+jsonParser :: Conduit BS.ByteString (ResourceT IO) (PositionRange, Value)
 jsonParser = conduitParser json
 
 postData :: Credential -> T.Text -> IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
 postData cred postString = withManager $ \manager -> do
     initReq <- parseUrl $ restAPI "statuses/update.json"
-    let text = TE.encodeUtf8 postString
-    let request = urlEncodedBody [("status", text)] initReq
+    let postText = TE.encodeUtf8 postString
+    let request = urlEncodedBody [("status", postText)] initReq
     signed <- signOAuth oauth cred request
     http signed manager
 

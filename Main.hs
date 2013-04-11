@@ -23,6 +23,7 @@ options =
     , Option ['u'] ["update"] (ReqArg (\string opts -> opts {command = Tweet (pack string)}) "CONTENT") "Tweet to twitter"
     ]
 
+main :: IO ()
 main = do
     config <- defaultConfig
     args <- getArgs
