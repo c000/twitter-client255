@@ -16,10 +16,7 @@ import qualified Data.Conduit.Binary as CB
 import Data.Conduit.Attoparsec
 import Data.Aeson
 
-import Control.Monad.IO.Class (liftIO)
-
 import qualified Secrets
-import Client255.Type
 
 oauth :: OAuth.OAuth
 oauth = OAuth.newOAuth
@@ -58,24 +55,11 @@ postData cred postString = withManager $ \manager -> do
     signed <- signOAuth oauth cred request
     http signed manager
 
-parseUserStream :: Credential -> IO ()
-parseUserStream cred = do
-    withManager $ \manager -> do
-        initReq <- parseUrl "https://userstream.twitter.com/1.1/user.json"
-        req <- signOAuth oauth cred initReq
-        source <- http req manager
-        loop (responseBody source)
-  where
-    loop source = do
-        (source', result) <- source $$++ jsonParser =$ await
-        case result of
-            Just (_, json)   -> do
-                case fromJSON json of
-                    Success x -> liftIO $ print (x :: Tweet)
-                    Error err -> liftIO $ print json >> putStrLn err
-                loop source'
-            Nothing           -> do
-                return ()
+getUserStream :: Credential -> Manager -> ResourceT IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
+getUserStream cred manager = do
+    initReq <- parseUrl "https://userstream.twitter.com/1.1/user.json"
+    req <- signOAuth oauth cred initReq
+    http req manager
 
 getFavorites :: Credential -> IO ()
 getFavorites cred = do
