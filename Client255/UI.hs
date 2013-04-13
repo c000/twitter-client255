@@ -4,6 +4,8 @@ module Client255.UI
 
 import Control.Applicative
 import Data.Text (Text)
+import qualified Data.Text.IO as T
+import System.IO
 import System.Directory
 import System.FilePath
 import Web.Authenticate.OAuth (Credential)
@@ -32,5 +34,16 @@ tryGetCred path = do
 
 tweet :: Credential -> Text -> IO ()
 tweet cred content = do
-    postData cred content
-    return ()
+    hPutStr stderr "Do you tweet \""
+    T.hPutStr stderr content
+    hPutStr stderr "\" (y/n): "
+    l <- getLine
+    case l of
+        'y':_ -> execTweet
+        'Y':_ -> execTweet
+        _     -> hPutStrLn stderr "Canceled."
+  where
+    execTweet = do
+        postData cred content
+        hPutStrLn stderr "Tweet posted."
+        return ()
