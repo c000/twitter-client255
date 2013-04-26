@@ -45,7 +45,7 @@ runUserStream cred = withManager $ \manager -> do
   where
     printTweet t = do
         T.putStr $ (T.screenName . T.user) t
-        putChar '\t'
+        putStr $ " [" ++ (show . T.tweetId) t ++ "] "
         T.putStrLn $ T.text t
     userStreamPrint stream = do
         (stream', result) <- stream $$++ (conduitParser json) =$ await
