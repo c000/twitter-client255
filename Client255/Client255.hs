@@ -5,6 +5,7 @@ module Client255.Client255
 
 import System.IO
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 
@@ -60,6 +61,14 @@ getUserStream cred manager = do
     initReq <- parseUrl "https://userstream.twitter.com/1.1/user.json"
     req <- signOAuth oauth cred initReq
     http req manager
+
+getHomeTimeline :: Credential -> IO (BS.ByteString)
+getHomeTimeline cred = do
+    withManager $ \manager -> do
+        initReq <- parseUrl $ restAPI "statuses/home_timeline?count=200"
+        req <- signOAuth oauth cred initReq
+        lbs <- httpLbs req manager
+        return $ (LBS.toStrict . responseBody) lbs
 
 getFavorites :: Credential -> IO ()
 getFavorites cred = do
