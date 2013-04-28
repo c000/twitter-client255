@@ -3,6 +3,7 @@ import System.Console.GetOpt
 import System.Environment
 import System.Directory
 import System.FilePath
+import System.IO (hSetEcho, stdout)
 
 import Data.Text (pack)
 
@@ -25,6 +26,7 @@ options =
 
 main :: IO ()
 main = do
+    hSetEcho stdout False
     config <- defaultConfig
     args <- getArgs
     case parseArgs args of
