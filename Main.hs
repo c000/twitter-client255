@@ -22,6 +22,7 @@ options :: [OptDescr (Config -> Config)]
 options =
     [ Option ['c'] ["credential"] (ReqArg (\path opts -> opts {credPath = path}) "PATH") "Credential path"
     , Option ['u'] ["update"] (ReqArg (\string opts -> opts {command = Tweet (pack string)}) "CONTENT") "Tweet to twitter"
+    , Option ['h'] ["hometimeline"] (NoArg (\opts -> opts {command = HomeTimeline})) "Get HomeTimeline"
     ]
 
 main :: IO ()

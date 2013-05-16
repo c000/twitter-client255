@@ -10,4 +10,5 @@ data Config = Config
 
 data Command = UserStream
              | Tweet Text
+             | HomeTimeline
              deriving (Show, Read)

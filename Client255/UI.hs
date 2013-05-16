@@ -5,6 +5,7 @@ module Client255.UI
 import Control.Applicative
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson
+import Data.Attoparsec.ByteString (parse, IResult(..))
 import Data.Conduit
 import Data.Conduit.Attoparsec
 import Data.Text (Text)
@@ -15,9 +16,10 @@ import System.Directory
 import System.FilePath
 import Web.Authenticate.OAuth (Credential)
 
-import Client255.Client255
+import Client255.Client255 as C
 import Client255.Config
 import qualified Client255.Type as T
+import Client255.Printer
 
 runClient :: Config -> IO ()
 runClient config = do
@@ -25,6 +27,7 @@ runClient config = do
     case command config of
         UserStream -> runUserStream cred
         Tweet content -> tweet cred content
+        HomeTimeline -> homeTimeline cred
 
 tryGetCred :: FilePath -> IO Credential
 tryGetCred path = do
@@ -43,10 +46,6 @@ runUserStream cred = withManager $ \manager -> do
     userStream <- getUserStream cred manager
     userStreamPrint $ responseBody userStream
   where
-    printTweet t = do
-        T.putStr $ (T.screenName . T.user) t
-        putStr $ " [" ++ (show . T.tweetId) t ++ "] "
-        T.putStrLn $ T.text t
     userStreamPrint stream = do
         (stream', result) <- stream $$++ (conduitParser json) =$ await
         case result of
@@ -56,6 +55,13 @@ runUserStream cred = withManager $ \manager -> do
                     Success x -> liftIO $ printTweet (x :: T.Tweet)
                     Error _   -> liftIO $ print jsonObject
                 userStreamPrint stream'
+
+homeTimeline :: Credential -> IO ()
+homeTimeline cred = do
+    timeline <- C.getHomeTimeline cred
+    case parse json timeline of
+        Done _ ary -> print ary
+        someError  -> print someError
 
 tweet :: Credential -> Text -> IO ()
 tweet cred content = do

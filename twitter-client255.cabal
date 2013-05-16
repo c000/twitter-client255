@@ -54,9 +54,11 @@ executable twitter-client255
                      , filepath
                      , directory
                      , bytestring
+                     , vector
                      , transformers
                      , aeson
                      , conduit
+                     , attoparsec
                      , attoparsec-conduit
                      , http-conduit
                      , authenticate-oauth

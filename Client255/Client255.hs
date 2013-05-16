@@ -65,7 +65,7 @@ getUserStream cred manager = do
 getHomeTimeline :: Credential -> IO (BS.ByteString)
 getHomeTimeline cred = do
     withManager $ \manager -> do
-        initReq <- parseUrl $ restAPI "statuses/home_timeline?count=200"
+        initReq <- parseUrl $ restAPI "statuses/home_timeline.json?count=200"
         req <- signOAuth oauth cred initReq
         lbs <- httpLbs req manager
         return $ (LBS.toStrict . responseBody) lbs
