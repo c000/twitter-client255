@@ -10,6 +10,7 @@ import Data.Conduit
 import Data.Conduit.Attoparsec
 import Data.Text (Text)
 import qualified Data.Text.IO as T
+import qualified Data.Vector as V
 import Network.HTTP.Conduit
 import System.IO
 import System.Directory
@@ -60,7 +61,10 @@ homeTimeline :: Credential -> IO ()
 homeTimeline cred = do
     timeline <- C.getHomeTimeline cred
     case parse json timeline of
-        Done _ ary -> print ary
+        Done _ (Array v) -> V.forM_ v $ \raw ->
+            case fromJSON raw of
+                Success t -> printTweet t
+                Error err -> putStrLn err
         someError  -> print someError
 
 tweet :: Credential -> Text -> IO ()
