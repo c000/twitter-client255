@@ -22,9 +22,9 @@ import qualified Secrets
 oauth :: OAuth.OAuth
 oauth = OAuth.newOAuth
     { OAuth.oauthServerName = "twitter"
-    , OAuth.oauthRequestUri = "http://api.twitter.com/oauth/request_token"
-    , OAuth.oauthAccessTokenUri = "http://api.twitter.com/oauth/access_token"
-    , OAuth.oauthAuthorizeUri = "http://api.twitter.com/oauth/authorize"
+    , OAuth.oauthRequestUri = "https://api.twitter.com/oauth/request_token"
+    , OAuth.oauthAccessTokenUri = "https://api.twitter.com/oauth/access_token"
+    , OAuth.oauthAuthorizeUri = "https://api.twitter.com/oauth/authorize"
     , OAuth.oauthSignatureMethod = OAuth.HMACSHA1
     , OAuth.oauthConsumerKey = Secrets.consumerKey
     , OAuth.oauthConsumerSecret = Secrets.consumerSecret
