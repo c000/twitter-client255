@@ -60,7 +60,7 @@ executable twitter-client255
                      , conduit
                      , attoparsec
                      , attoparsec-conduit
-                     , http-conduit
+                     , http-conduit < 2.0
                      , authenticate-oauth
                      , unordered-containers
                      , text
