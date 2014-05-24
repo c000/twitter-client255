@@ -50,7 +50,7 @@ jsonParser = conduitParser json
 
 postData :: Credential -> T.Text -> IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
 postData cred postString = withManager $ \manager -> do
-    initReq <- parseUrl $ restAPI "statuses/update.json"
+    let Just initReq = parseUrl $ restAPI "statuses/update.json"
     let postText = TE.encodeUtf8 postString
     let request = urlEncodedBody [("status", postText)] initReq
     signed <- signOAuth oauth cred request
@@ -58,14 +58,14 @@ postData cred postString = withManager $ \manager -> do
 
 getUserStream :: Credential -> Manager -> ResourceT IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
 getUserStream cred manager = do
-    initReq <- parseUrl "https://userstream.twitter.com/1.1/user.json"
+    let Just initReq = parseUrl "https://userstream.twitter.com/1.1/user.json"
     req <- signOAuth oauth cred initReq
     http req manager
 
 getHomeTimeline :: Credential -> IO (BS.ByteString)
 getHomeTimeline cred = do
     withManager $ \manager -> do
-        initReq <- parseUrl $ restAPI "statuses/home_timeline.json?count=200"
+        let Just initReq = parseUrl $ restAPI "statuses/home_timeline.json?count=200"
         req <- signOAuth oauth cred initReq
         lbs <- httpLbs req manager
         return $ (LBS.toStrict . responseBody) lbs
@@ -73,7 +73,7 @@ getHomeTimeline cred = do
 getFavorites :: Credential -> IO ()
 getFavorites cred = do
     withManager $ \manager -> do
-        initReq <- parseUrl $ restAPI "favorites/list.json?count=200"
+        let Just initReq = parseUrl $ restAPI "favorites/list.json?count=200"
         req <- signOAuth oauth cred initReq
         response <- http req manager
         (responseBody response) $$+- CB.sinkFile "/tmp/favorites.json"
