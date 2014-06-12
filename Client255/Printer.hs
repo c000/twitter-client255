@@ -7,6 +7,6 @@ import Client255.Type
 
 printTweet :: Tweet -> IO ()
 printTweet t = do
-    T.putStr $ (screenName . user) t
-    putStr $ " [" ++ (show . tweetId) t ++ "] "
+    T.putStr   $ (screenName . user) t
+    putStr     $ " [" ++ (show . tweetId) t ++ "] "
     T.putStrLn $ text t

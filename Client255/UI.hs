@@ -26,9 +26,9 @@ runClient :: Config -> IO ()
 runClient config = do
     cred <- tryGetCred (credPath config)
     case command config of
-        UserStream -> runUserStream cred
+        UserStream    -> runUserStream cred
         Tweet content -> tweet cred content
-        HomeTimeline -> homeTimeline cred
+        HomeTimeline  -> homeTimeline cred
 
 tryGetCred :: FilePath -> IO Credential
 tryGetCred path = do

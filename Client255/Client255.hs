@@ -21,14 +21,14 @@ import qualified Secrets
 
 oauth :: OAuth.OAuth
 oauth = OAuth.newOAuth
-    { OAuth.oauthServerName = "twitter"
-    , OAuth.oauthRequestUri = "https://api.twitter.com/oauth/request_token"
-    , OAuth.oauthAccessTokenUri = "https://api.twitter.com/oauth/access_token"
-    , OAuth.oauthAuthorizeUri = "https://api.twitter.com/oauth/authorize"
+    { OAuth.oauthServerName      = "twitter"
+    , OAuth.oauthRequestUri      = "https://api.twitter.com/oauth/request_token"
+    , OAuth.oauthAccessTokenUri  = "https://api.twitter.com/oauth/access_token"
+    , OAuth.oauthAuthorizeUri    = "https://api.twitter.com/oauth/authorize"
     , OAuth.oauthSignatureMethod = OAuth.HMACSHA1
-    , OAuth.oauthConsumerKey = Secrets.consumerKey
-    , OAuth.oauthConsumerSecret = Secrets.consumerSecret
-    , OAuth.oauthVersion = OAuth.OAuth10a
+    , OAuth.oauthConsumerKey     = Secrets.consumerKey
+    , OAuth.oauthConsumerSecret  = Secrets.consumerSecret
+    , OAuth.oauthVersion         = OAuth.OAuth10a
     }
 
 restAPI :: String -> String
@@ -51,8 +51,8 @@ jsonParser = conduitParser json
 postData :: Credential -> T.Text -> IO (Response (ResumableSource (ResourceT IO) BS.ByteString))
 postData cred postString = withManager $ \manager -> do
     let Just initReq = parseUrl $ restAPI "statuses/update.json"
-    let postText = TE.encodeUtf8 postString
-    let request = urlEncodedBody [("status", postText)] initReq
+        postText     = TE.encodeUtf8 postString
+        request      = urlEncodedBody [("status", postText)] initReq
     signed <- signOAuth oauth cred request
     http signed manager
 

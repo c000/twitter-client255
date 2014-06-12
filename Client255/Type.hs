@@ -13,9 +13,9 @@ import System.Locale
 
 data Tweet = Tweet
     { createdAt :: UTCTime
-    , tweetId :: Integer
-    , text :: Text
-    , user :: User
+    , tweetId   :: Integer
+    , text      :: Text
+    , user      :: User
     } deriving (Show)
 
 instance FromJSON Tweet where
@@ -35,8 +35,8 @@ instance FromJSON Tweet where
     parseJSON _ = fail "Invalid format"
 
 data User = User
-    { userId :: Integer
-    , name :: Text
+    { userId     :: Integer
+    , name       :: Text
     , screenName :: Text
     } deriving (Show)
 

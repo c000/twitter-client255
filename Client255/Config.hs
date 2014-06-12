@@ -5,7 +5,7 @@ import Data.Text (Text)
 
 data Config = Config
     { credPath :: FilePath
-    , command :: Command
+    , command  :: Command
     } deriving (Show, Read)
 
 data Command = UserStream
