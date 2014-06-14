@@ -41,15 +41,7 @@ build-type:          Simple
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.8
 
-
-executable twitter-client255
-  -- .hs or .lhs file containing the Main module.
-  main-is:             Main.hs
-  
-  -- Modules included in this executable, other than Main.
-  -- other-modules:       
-  
-  -- Other library packages from which modules are imported.
+library
   build-depends:       base ==4.7.*
                      , filepath
                      , directory
@@ -66,4 +58,23 @@ executable twitter-client255
                      , text
                      , time
                      , old-locale
+  hs-source-dirs: lib
+  exposed-modules:
+    Client255.Config
+    Client255.Type
+    Client255.Client255
+    Client255.UI
+    Client255.Printer
+    Secrets
+  ghc-options:         -O -W
+
+executable twitter-client255
+  main-is:             Main.hs
+  hs-source-dirs: .
+  build-depends: twitter-client255
+               , base == 4.7.*
+               , directory
+               , filepath
+               , bytestring
+               , text
   ghc-options:         -O -W
