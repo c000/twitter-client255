@@ -78,3 +78,11 @@ executable client255-cli
                , bytestring
                , text
   ghc-options:         -O -W
+
+executable client255-gui
+  main-is: Main.hs
+  hs-source-dirs: gui
+  build-depends: twitter-client255
+               , base == 4.*
+               , gtk == 0.12.*
+               , transformers == 0.4.*
