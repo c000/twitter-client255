@@ -68,9 +68,9 @@ library
     Secrets
   ghc-options:         -O -W
 
-executable twitter-client255
+executable client255-cli
   main-is:             Main.hs
-  hs-source-dirs: .
+  hs-source-dirs: cli
   build-depends: twitter-client255
                , base == 4.7.*
                , directory
